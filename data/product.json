@@ -1,0 +1,11 @@
+
+{
+    "name": "med1",
+    "company": "xyz",
+    "manf_date": "sept 2020",
+    "exp_date": "dec 2020",
+    "dose": "1/day",
+    "composition": "abc",
+    "effects": "abc",
+    "side_effects": "abc"
+}
