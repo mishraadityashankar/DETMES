@@ -7,6 +7,7 @@ const customer_route = require("./routes/route_customer");
 const retailer_route = require("./routes/route_retailer");
 const order_route = require("./routes/route_order");
 const product_route = require("./routes/route_product");
+const medicine_route= require("./routes/route_medicine")
 
 
 
@@ -21,6 +22,7 @@ app.get('/',(req,res) =>{
 })
 app.use('/retailer',retailer_route);
 app.use('/customer',customer_route);
+app.use('/medicine',medicine_route);
 // app.use('/order',order_route);
 app.use('/product',product_route);
 

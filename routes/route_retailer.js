@@ -4,6 +4,10 @@ const jwt= require('jsonwebtoken');
 const bcrypt= require('bcrypt');
 const checkauth= require('../auth');
 const retailer=require("../models/model_retailer");
+const medicine=require("../models/model_medicine");
+const product=require("../models/model_product");
+
+
 
 
 
@@ -84,84 +88,149 @@ router.post("/login",(req,res) => {
       })
   })
 
-// get all retailer for admin
-router.get("/getall",function(req,res){
-    retailer.find({},function(err,retailer){
-        if(err)
-        {
-            // res.redirect("/retailer/get");
-            console.log(err);
-        }
-        else{
-            // console.log(retailer);
-             res.json(retailer);
 
-        }
-    })
-})
-// get retailer by id
-router.get("/getone/:id",function(req,res){
-    
-    retailer.findById(req.params.id,function(err,foundRetailer){
+// get retailer by id dashboard
+router.get("/dashboard",checkauth,function(req,res){
+  const token=req.headers.authorization.split(" ")[1];
+  const decoded=jwt.verify(token,"secret");
+  req.userData =decoded;
+  const userid= req.userData.id;
+  retailer.findById(userid,function(err,foundRetailer){
         if(err)
         {
-            // res.redirect("/softwareDesign/get");
+            
             console.log(err);
         }
         else{
             // res.send("edit",{foundCustomer: foundCustomer})
             res.json(foundRetailer);
         }
-    })
+  })
 })
 
-// general add retailer route of no use
-router.post("/add",function(req,res){
-
-   retailer.create(req.body,function(err,newlyCreatedretailer){
-        if (err){
-            // res.redirect("/retailer/get");
-            console.log(err);
-        }
-        else{
-            // res.redirect("/retailer/get");
-            res.send(newlyCreatedretailer);
-            console.log(newlyCreatedretailer);
-        } 
-    })
-})
 
 
 
 //edit route  for user to update personal info
-router.post("/edit/:id",function(req,res){
-    retailer.findByIdAndUpdate(req.params.id,req.body,function(err,updated_retailer){
+router.post("/editProfile",checkauth,function(req,res){
+  const token=req.headers.authorization.split(" ")[1];
+  const decoded=jwt.verify(token,"secret");
+  req.userData =decoded;
+  const retailerId= req.userData.id;
+
+    retailer.findByIdAndUpdate(retailerId,req.body,function(err){
         if(err){
-            // res.redirect("/retailer/get");
+            // res.redirect("/customer/get");
             console.log(err);
         }else{
-            // res.redirect("/retailer/get");
-            res.json(updated_retailer);
+            // res.redirect("/customer/get");
+            res.send("updated");
         }
     })
 })
 
 //delete route to delete account
-router.delete("/delete/:id",function(req,res){
-    retailer.findByIdAndRemove(req.params.id,function(err,deleted_retailer){
+router.delete("/deleteProfile",checkauth,function(req,res){
+  const token=req.headers.authorization.split(" ")[1];
+  const decoded=jwt.verify(token,"secret");
+  req.userData =decoded;
+  const retailerId= req.userData.id;
+    retailer.findByIdAndRemove(retailerId,function(err,deletedRetailer){
         if(err){
-            // res.redirect("/retailer");
+            // res.redirect("/customer");
             console.log("err is "+err)
         }
         else{
-            // res.redirect("/retailer");
+            // res.redirect("/customer");
               res.send("deleted");
-              console.log(deleted_retailer)
-            // res.redirect("/retailer/get");
+              console.log(deletedRetailer)
+            // res.redirect("/customer/get");
         }
     })
 })
 
+///create product and add to stock
+router.post("/createProduct/:id",checkauth,function(req,res){
+
+  const token=req.headers.authorization.split(" ")[1];
+  const decoded=jwt.verify(token,"secret");
+  req.userData =decoded;
+
+  const retailerId= req.userData.id;
+  const medicineId= req.params.id;
+ 
+  newProduct= new product({
+   retailer_id: retailerId,
+   medicine_id: medicineId
+  })
+ 
+ product.create(newProduct,function(err,newlyCreatedProduct){
+      if (err){
+          console.log(err);
+      }
+      else{
+          
+          retailer.findByIdAndUpdate(retailerId,{ $push: { stock: newlyCreatedProduct._id } },function(err){
+              if(err){
+                  
+                  console.log(err);
+              }else{
+                  
+                  res.send("product created and added to stock");
+              }
+          })
+      } 
+  })
+})
+
+/// get stock items for logged in retailer
+router.get("/getStockItems",checkauth,function(req,res){
+  const token=req.headers.authorization.split(" ")[1];
+  const decoded=jwt.verify(token,"secret");
+  req.userData =decoded;
+
+  const retailerId= req.userData.id;
+  product.find({retailer_id:retailerId}).populate('retailer_id').populate('medicine_id').exec((err,PopulatedProduct)=>{
+      if(!err)
+      {
+        
+        res.json(PopulatedProduct)
+      }
+  })
+})
+
+
+/// Delete Product by Id from stock for logged in retailer
+
+router.delete("/deleteProduct/:id",checkauth,function(req,res){
+  const token=req.headers.authorization.split(" ")[1];
+  const decoded=jwt.verify(token,"secret");
+  req.userData =decoded;
+
+  const retailerId= req.userData.id;
+
+  retailer.findByIdAndUpdate(retailerId,{ $pull: { stock:req.params.id } },function(err){
+      if(err){
+         
+          console.log(err);
+      }else{
+          
+          product.findByIdAndRemove(req.params.id,function(err,deletedProduct){
+              if(err){
+                  // res.redirect("/retailer");
+                  console.log("err is "+err)
+              }
+              else{
+                  
+                  res.send("product removed from stock as well as deleted from db");
+                  
+              }
+          })
+          
+      }
+  })
+  
+})
 
 /// see order history
        

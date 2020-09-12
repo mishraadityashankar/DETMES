@@ -8,27 +8,27 @@ const Product= props =>(
     <div class="card" >
         <img class="card-img-top" src={med1} alt="Card image"/>
         <div class="card-body">
-          <h4 class="card-title">Product Id</h4>
-          <p class="card-text">{props.product._id}</p>
-          <Link to={"/viewStockProduct/"+props.product._id}>
+          <h4 class="card-title">{props.product.name}</h4>
+          <p class="card-text">{props.product.company}</p>
+          <p class="card-text">{props.product.dose}</p> 
+          <Link to={"/viewMedicine/"+props.product._id}>
             <button type="button" className="btn btn-primary btn-block">
-              View this
+              View Medicine
             </button>
          </Link>
         </div>
       </div>
   </div>
 )
-class RetailerSeeStock extends Component {
+class MedicineList extends Component {
     constructor(props){
         super(props);
         this.state={ products : [] };
+
     }
     componentDidMount(){
-        const token= localStorage.getItem("token");
-        
-        axios.get('/retailer/getStockItems',{headers : { 
-            'Authorization' :"Bearer "+token}})
+     
+        axios.get('/medicine/getall')
         .then(response => {
             this.setState({products: response.data});
         })
@@ -37,27 +37,22 @@ class RetailerSeeStock extends Component {
         })  
     }
     productlist(){
-        if(this.state.products.length===0)
-        {
-           return <h1>Your Stock is empty :(</h1>
-        }
-        else{
         return this.state.products.map(function(currentProduct, i) {
           //console.log(currentEvent);
           return <Product product={currentProduct} key={i} />
-        })
-        }
+      })
     }
-
     render() {
         return (
-        <div class="container mt-5">
-            <div class="row">
-                {this.productlist()}
-            </div>
-        </div>
+        
+               <div class="container mt-5">
+                    <div class="row">
+                        {this.productlist()}
+                    </div>
+                </div>
+            
         );
     }
 }
 
-export default RetailerSeeStock;
+export default MedicineList;

@@ -40,7 +40,7 @@ class RetailerLogin extends Component {
       .then(res =>{
        localStorage.setItem('token',res.data);
        alert("Login Successful")
-       this.props.history.push('/');
+       this.props.history.push('/retailerdetail');
        window.location.reload();
         
       }).catch(

@@ -83,21 +83,6 @@ router.post("/login",(req,res) => {
       })
   })
 
-// get all customer for admin
-router.get("/getall",checkauth,function(req,res){
-    customer.find({},function(err,customer){
-        if(err)
-        {
-            // res.redirect("/customer/get");
-            console.log(err);
-        }
-        else{
-            // console.log(customer);
-             res.json(customer);
-
-        }
-    })
-})
 // get customer by token via id
 router.get("/dashboard",checkauth,function(req,res){
   const token=req.headers.authorization.split(" ")[1];
@@ -117,21 +102,6 @@ router.get("/dashboard",checkauth,function(req,res){
   })
 })
 
-// general add customer route of no use
-router.post("/add",function(req,res){
-   
-   customer.create(req.body,function(err,newlyCreatedcustomer){
-        if (err){
-            // res.redirect("/customer/get");
-            console.log(err);
-        }
-        else{
-            // res.redirect("/customer/get");
-            res.send(newlyCreatedcustomer);
-            console.log(newlyCreatedcustomer);
-        } 
-    })
-})
 
 
 
@@ -180,11 +150,11 @@ router.get("/getCartItems",checkauth,function(req,res){
  
 
  const customerId= req.userData.id;
-  customer.findById(customerId).populate('cart').exec((err,products)=>{
+  customer.findById(customerId).populate('cart').exec((err,PopulatedCustomer)=>{
     if(!err)
     {
-      console.log(products)
-      res.json(products.cart)
+      console.log(PopulatedCustomer)
+      res.json(PopulatedCustomer.cart)
     }
   })
 })

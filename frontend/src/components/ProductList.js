@@ -5,13 +5,13 @@ import axios from 'axios';
 import med1 from '../images/med1.png';
 
 const Product= props =>(
-    <div class="col-4">
+    <div class="col-4 pb-4">
     <div class="card" >
         <img class="card-img-top" src={med1} alt="Card image"/>
         <div class="card-body">
-          <h4 class="card-title">{props.product.name}</h4>
-          <p class="card-text">{props.product.company}</p>
-          <p class="card-text">{props.product.dose}</p> 
+          <h4 class="card-title">{props.product.medicine_id.name}</h4>
+          <p class="card-text">{props.product.medicine_id.company}</p>
+          <p class="card-text">{props.product.medicine_id.dose}</p> 
           <Link to={"/viewProduct/"+props.product._id}>
             <button type="button" className="btn btn-primary btn-block">
               View Product

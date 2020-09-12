@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-class ViewProduct extends Component {
+class ViewStockProduct extends Component {
     constructor(props){
         super(props);
-        this.AddtoCart = this.AddtoCart.bind(this);
+        this.RemoveFromStock = this.RemoveFromStock.bind(this);
         this.state={
             id: '',
             company: '',
@@ -22,13 +22,16 @@ class ViewProduct extends Component {
         };
         
     }
-    AddtoCart(){
+    RemoveFromStock(){
       const token= localStorage.getItem("token");
       const fakebody={};
-      axios.post("/customer/addToCart/"+this.props.match.params.id,fakebody,{headers : { 
+      axios.delete("/retailer/deleteProduct/"+this.props.match.params.id,{headers : { 
       'Authorization' :"Bearer "+token}})
       .then(res => {
          alert(res.data)
+         this.props.history.push('/mystock');
+         window.location.reload();
+
        }).catch( 
         err => {console.log(err)
             alert("something went wrong")
@@ -146,15 +149,13 @@ class ViewProduct extends Component {
                     
                     
                         
-                    <button  type="button" class="btn btn-success btn-block" onClick={this.AddtoCart}>Add To Cart</button>  
-                    <br/>
-                    <button type="button" class="btn btn-danger  btn-block">Buy Product</button>
+                    <button  type="button" class="btn btn-danger btn-block" onClick={this.RemoveFromStock}>Remove From Stock</button>  
+
                 </div>
                 <div class="col-3"></div>
             </div>
             </div>
-        );
-    }
+    )}
 }
 
-export default ViewProduct;
+export default ViewStockProduct;

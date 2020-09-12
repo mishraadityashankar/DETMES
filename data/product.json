@@ -2,6 +2,7 @@
 {
     "name": "med1",
     "company": "xyz",
+    "price": 100,
     "manf_date": "sept 2020",
     "exp_date": "dec 2020",
     "dose": "1/day",
